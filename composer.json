@@ -1,8 +1,12 @@
 {
-    "name": "swiftmailer/swiftmailer",
+    "name": "nobuhiko/swiftmailer",
     "type": "library",
-    "description": "Swiftmailer, free feature-rich PHP mailer",
-    "keywords": ["mail","mailer","email"],
+    "description": "Swift Mailer 5.4.12 with security fixes backported, for EC-CUBE 3.0.x shops that cannot move off the versions EC-CUBE 3.0.18 ships",
+    "keywords": [
+        "mail",
+        "mailer",
+        "email"
+    ],
     "homepage": "https://swiftmailer.symfony.com",
     "license": "MIT",
     "authors": [
@@ -17,21 +21,20 @@
     "require": {
         "php": ">=5.3.3"
     },
-    "require-dev": {
-        "mockery/mockery": "~0.9.1",
-        "symfony/phpunit-bridge": "~3.2"
-    },
     "autoload": {
-        "files": ["lib/swift_required.php"]
+        "files": [
+            "lib/swift_required.php"
+        ]
     },
     "autoload-dev": {
         "psr-0": {
             "Swift_": "tests/unit"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "5.4-dev"
-        }
+    "replace": {
+        "swiftmailer/swiftmailer": "5.4.12"
+    },
+    "support": {
+        "issues": "https://github.com/nobuhiko/swiftmailer/issues"
     }
 }
