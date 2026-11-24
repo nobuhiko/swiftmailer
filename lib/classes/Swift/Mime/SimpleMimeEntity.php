@@ -843,4 +843,11 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
         }
         $this->setChildren($children);
     }
+
+    public function __wakeup()
+    {
+        // Don't trust properties at destruct time: an unserialized entity gets a fresh cache key and an in-memory cache
+        $this->_cacheKey = md5(uniqid(getmypid().mt_rand(), true));
+        $this->_cache = new Swift_KeyCache_ArrayKeyCache(new Swift_KeyCache_SimpleKeyCacheInputStream());
+    }
 }

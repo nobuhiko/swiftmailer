@@ -318,4 +318,10 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
             $this->clearAll($nsKey);
         }
     }
+
+    public function __wakeup()
+    {
+        // Don't trust properties at destruct time: an unserialized object must not delete files on behalf of the payload
+        $this->_keys = array();
+    }
 }
