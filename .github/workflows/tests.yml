@@ -1,5 +1,8 @@
-# 元の Swift Mailer 5.4 のテスト一式を、EC-CUBE 3.0.18 のお店が使う PHP 7.1 と 7.4 で回す
-# Runs the original Swift Mailer 5.4 test suite on the PHP versions EC-CUBE 3.0.18 shops run (7.1 and 7.4).
+# 元の Swift Mailer 5.4 のテスト一式を、EC-CUBE 3.0.18 のお店が使う PHP 7.1 と 7.4 で回す。
+# 同じテストを元のバージョン(v5.4.12)のライブラリでも回し、修正を移したことで新しく落ちたテストだけを失敗にする
+# (時刻帯のデータや OpenSSL など、元のバージョンでも落ちるものは数えない。どちらも一覧には出す)。
+# Runs the original Swift Mailer 5.4 test suite on PHP 7.1 and 7.4 (what EC-CUBE 3.0.18 shops run), once with this
+# fork and once with the upstream v5.4.12 library code, and fails only on tests that break because of the backports.
 name: tests
 on:
   push:
@@ -14,19 +17,36 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.1', '7.4']
+    env:
+      BASE: 181b89f18a90f8925ef805f950d47a7190e9b950 # v5.4.12
+      SYMFONY_PHPUNIT_VERSION: '5.7'
+      SYMFONY_DEPRECATIONS_HELPER: weak
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v2
           extensions: mbstring, iconv
           coverage: none
-      # require-dev は配布物から外してあるので、テストの道具だけここで入れる
-      - run: composer require --dev --no-interaction --no-progress "symfony/phpunit-bridge:^3.4" "mockery/mockery:~0.9.1"
-      - run: vendor/bin/simple-phpunit --testsuite "SwiftMailer unit tests"
-        env:
-          SYMFONY_PHPUNIT_VERSION: '5.7'
-          SYMFONY_DEPRECATIONS_HELPER: weak
+      # require-dev は配布物から外してあるので、テストの道具だけここで入れる。
+      # PHPUnit 5.7 には Packagist の弱点の情報が付いていて Composer が入れないので、テストのときだけ止めを外す
+      - name: install test tools
+        run: |
+          rm -f composer.lock
+          composer config audit.block-insecure false
+          :
+          composer require --dev --no-interaction --no-progress "symfony/phpunit-bridge:^3.4" "mockery/mockery:~0.9.1"
+      - name: tests with this fork
+        run: |
+          run(){ vendor/bin/simple-phpunit --testsuite "SwiftMailer unit tests" --log-junit junit-$1.xml; }; run head || true
+      - name: tests with the upstream v5.4.12 library
+        run: |
+          git checkout "$BASE" -- lib
+          run(){ vendor/bin/simple-phpunit --testsuite "SwiftMailer unit tests" --log-junit junit-$1.xml; }; run base || true
+          git checkout HEAD -- lib
+      - name: compare
+        run: php .github/ci/compare.php "junit-head*.xml" "junit-base*.xml"
