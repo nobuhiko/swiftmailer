@@ -13,7 +13,7 @@ EC-CUBE 3.0.18 requires `swiftmailer/swiftmailer` 5.x. Swift Mailer is no longer
 Requires Composer 2. In the shop's project root:
 
 ```
-composer require nobuhiko/swiftmailer:^5.4.12
+composer require umiushi-lab/swiftmailer:^5.4.12
 ```
 
 The package `replace`s `swiftmailer/swiftmailer` 5.4.12, so Composer removes the original and every other package keeps working against the same version.

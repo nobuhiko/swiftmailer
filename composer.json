@@ -1,5 +1,5 @@
 {
-    "name": "nobuhiko/swiftmailer",
+    "name": "umiushi-lab/swiftmailer",
     "type": "library",
     "description": "Swift Mailer 5.4.12 with security fixes backported, for EC-CUBE 3.0.x shops that cannot move off the versions EC-CUBE 3.0.18 ships",
     "keywords": [
@@ -35,6 +35,6 @@
         "swiftmailer/swiftmailer": "5.4.12"
     },
     "support": {
-        "issues": "https://github.com/nobuhiko/swiftmailer/issues"
+        "issues": "https://github.com/umiushi-lab/swiftmailer/issues"
     }
 }
